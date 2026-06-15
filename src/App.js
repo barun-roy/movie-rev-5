@@ -89,7 +89,7 @@ export default function App() {
 
   function handleMovieDetail(id) {
     setSelectedId((prev) => (prev === id ? null : id));
-    setUserRating("")
+    setUserRating("");
   }
 
   function handleCloseMovieDetail() {
@@ -165,14 +165,12 @@ export default function App() {
 
         {/* Children props are implicit props -> preferred way in React */}
         {/* <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box> */}
+
         <Box>
           {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
           {isLoading && <Loader />}
           {!isLoading && !errorMessage && (
-            <MovieList
-              movies={movies}
-              onSelectedMovie={handleMovieDetail}
-            />
+            <MovieList movies={movies} onSelectedMovie={handleMovieDetail} />
           )}
           {errorMessage && <ErrorMessage message={errorMessage} />}
         </Box>
