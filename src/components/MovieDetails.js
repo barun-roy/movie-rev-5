@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineLeft } from "react-icons/ai";
 
 import StarRating from "./StarRating";
 import Loader from "./Loader";
+import { useKey } from "../hooks/useKey";
 
 const KEY = process.env.REACT_APP_API_KEY;
 
@@ -15,7 +16,14 @@ export default function MovieDetails({
   setUserRating,
 }) {
   const [movie, setMovie] = useState({});
+  // useState persists across renders, and updating it triggers re-render
   const [isLoading, setIsLoading] = useState(false);
+
+  // useRef persists across renders, but updating .current does NOT trigger re-render
+  const countRef = useRef(0);
+
+  // normal variable resets on every render
+  // let count = 0;
 
   const selectedMovieUserRating = watched
     .filter((movie) => movie.imdbID === selectedId)
@@ -43,10 +51,16 @@ export default function MovieDetails({
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
+      countRatingDecisions: countRef.current,
     };
     onAddWatched(newMovie);
     onCloseMovieDetail();
   }
+
+  useEffect(() => {
+    if (userRating) countRef.current = countRef.current + 1;
+    // if (userRating) count++;
+  }, [userRating]);
 
   useEffect(() => {
     async function getMovieDetails() {
@@ -83,21 +97,7 @@ export default function MovieDetails({
     };
   }, [title]);
 
-  //useEffect also commonly referred to as escape hatch , as it allows react developers to easily DOM manipulate directly
-  useEffect(() => {
-    
-    const callback = (e) => {
-      if (e.code === "Escape") {
-        onCloseMovieDetail();
-      }
-    };
-
-    document.addEventListener("keydown", callback);
-
-    return function () {
-      document.removeEventListener("keydown", callback);
-    };
-  }, [onCloseMovieDetail]);
+  useKey("Escape", onCloseMovieDetail);
 
   return (
     <div className="details">
