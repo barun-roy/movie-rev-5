@@ -72,6 +72,33 @@ export default function MovieDetails({
     getMovieDetails();
   }, [selectedId]);
 
+  // change page title based on selected movie in the movie list, to do this the plan is to use effect on mount of the movie details component
+
+  useEffect(() => {
+    if (!title) return;
+    document.title = `Movie | ${title}`;
+
+    return function () {
+      document.title = "usePopcorn";
+    };
+  }, [title]);
+
+  //useEffect also commonly referred to as escape hatch , as it allows react developers to easily DOM manipulate directly
+  useEffect(() => {
+    
+    const callback = (e) => {
+      if (e.code === "Escape") {
+        onCloseMovieDetail();
+      }
+    };
+
+    document.addEventListener("keydown", callback);
+
+    return function () {
+      document.removeEventListener("keydown", callback);
+    };
+  }, [onCloseMovieDetail]);
+
   return (
     <div className="details">
       {isLoading ? (
